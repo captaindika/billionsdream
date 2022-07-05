@@ -38,7 +38,7 @@ paths:
           description: Get user by login
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: "#/components/schemas/allUser"
               examples:
                 found:
@@ -95,7 +95,7 @@ paths:
                     example: 200
                   message:
                     type: string
-                    example: User created        
+                    example: User created
   /user/{id}:
     put:
       security:
@@ -183,7 +183,7 @@ paths:
         - bearerAuth: []
       tags:
         - User
-      summary: Get user by id 
+      summary: Get user by id
       description: Get user by id
       parameters:
         - in: path
@@ -285,7 +285,39 @@ paths:
                   $ref: "#/components/examples/unauthorized"
                 invalid_verify:
                   $ref: "#/components/examples/invalid_verify"
-    
+  /user/token:
+    post:
+      tags:
+        - User
+      summary: Generate access token by refresh token.
+      description: Generate access token by refresh token.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyYzQ3ZDQ3MDA0M2ZlYjc4YzY1NWNlMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY1NzA2MTY4MX0.vgkqiQbaNywMY7NN4G2jw-2bLYM8zcylIapwQ8Vjz8c
+        required: true
+      responses:
+        200:
+          description: Login user success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Success
+                  accessToken:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
 components:
   securitySchemes:
     bearerAuth:
@@ -356,21 +388,18 @@ components:
       summary: All user
       value:
         status: 200
-        data: [
-          {
-            _id: 62c47d470043feb78c655ce1,
-            username: admin,
-            name: super admin,
-            password: $2b$10$Bd1CH8VDVaIvnNFZVV9mke7f1HeFV/Re6ESPTULCtUhGsC1t2Q0Re,
-            gender: male,
-            role: admin,
-          }
-        ]
-        pagination: {
-          totalPages: 2,
-          totalData: 10,
-          currentPage: 1,
-        }
+        data:
+          [
+            {
+              _id: 62c47d470043feb78c655ce1,
+              username: admin,
+              name: super admin,
+              password: $2b$10$Bd1CH8VDVaIvnNFZVV9mke7f1HeFV/Re6ESPTULCtUhGsC1t2Q0Re,
+              gender: male,
+              role: admin,
+            },
+          ]
+        pagination: { totalPages: 2, totalData: 10, currentPage: 1 }
     found:
       summary: User found
       value:

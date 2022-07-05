@@ -26,10 +26,9 @@ const login = async (req, res) => {
         if (!user) throw { status: 400, message: `User with username ${username} not found` }
         const check = comparePassword(password, user.password)
         if (!check) throw { status: 400, message: 'Wrong password' }
-        const token = jwt.sign({ id: user.id, role: user.role }, process.env.TOKEN_KEY, {
-            expiresIn: 86400 // expires in 24 hours
-        });
-        res.status(200).send({ status: 200, message: 'Login success', token })
+        const accessToken = generateAccessToken({ id: user.id, role: user.role })
+        const refreshToken = jwt.sign({ id: user.id, role: user.role }, process.env.REFRESH_TOKEN_KEY)
+        res.status(200).send({ status: 200, message: 'Login success', accessToken, refreshToken })
     } catch (err) {
         console.log(err.message);
         res.status(err.status || 504).send({ status: err.status || 504, message: err.message })
@@ -116,6 +115,25 @@ const getUsers = async (req, res) => {
     }
 }
 
+const regenerateToken = async (req, res) => {
+    try {
+        const { token } = req.body
+        if (!token) throw { status: 401, message: 'Please insert refresh token' }
+        jwt.verify(token, process.env.REFRESH_TOKEN_KEY, (err, user) => {
+            if (err) throw { status: 403, message: 'Token invalid' }
+            const accessToken = generateAccessToken({ id: user.id, role: user.role })
+            res.status(200).send({ status: 200, message: 'Success', accessToken })
+        })
+    } catch (err) {
+        res.status(err.status || 504).send({ status: err.status || 504, message: err.message })
+    }
+}
+const generateAccessToken = (user) => {
+    return jwt.sign(user, process.env.ACCESS_TOKEN_KEY, {
+        expiresIn: 86400 // expires in 24 hours
+    });
+}
+
 module.exports = {
-    addUser, getUserDetail, getUserDetailById, deleteUser, updateUser, login, getUsers
+    addUser, getUserDetail, getUserDetailById, deleteUser, updateUser, login, getUsers, regenerateToken
 }
