@@ -8,11 +8,10 @@ const verifyToken = (req, res, next) => {
         }
 
         const token = req.headers['authorization'].split(' ')[1];
-
         if (!token) throw { status: 401, message: 'Access token is missing or invalid' }
 
         // verifies secret and checks exp
-        jwt.verify(token, process.env.TOKEN_KEY, function (err, decoded) {
+        jwt.verify(token, process.env.ACCESS_TOKEN_KEY, function (err, decoded) {
             if (err) throw { status: 401, message: 'Failed to authenticate token' }
             // if everything is good, save to request for use in other routes
             req.user = { id: decoded.id, role: decoded.role };
