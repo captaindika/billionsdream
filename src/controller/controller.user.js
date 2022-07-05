@@ -130,7 +130,7 @@ const regenerateToken = async (req, res) => {
 }
 const generateAccessToken = (user) => {
     return jwt.sign(user, process.env.ACCESS_TOKEN_KEY, {
-        expiresIn: '15s' // expires in 24 hours
+        expiresIn: 86400 // expires in 24 hours
     });
 }
 
