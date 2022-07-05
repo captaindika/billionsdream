@@ -3,11 +3,9 @@
 
 Simple API for login & CRUD user for admin
 
-## Installation
+## How to use
 ```sh
-git clone
-create .env file like .env.example
-run docker-compose up --build -d
+open host
 ```
 > Note: credential for admin on env.
 
