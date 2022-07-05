@@ -1,0 +1,401 @@
+openapi: 3.0.0
+info:
+  title: Sample API
+  description: Optional multiline or single-line description in HTML.
+  version: 0.1.9
+servers:
+  - url: http://your-heroku.com
+    description: Optional server description, e.g. Heroku server
+  - url: http://localhost:4000
+    description: Optional server description, e.g. local server for testing
+paths:
+  /user:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      summary: Get all users
+      description: get all users
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: name of username or user's name
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: number of page
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: number of limit
+      responses:
+        "200":
+          description: Get user by login
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/allUser"
+              examples:
+                found:
+                  $ref: "#/components/examples/allUser"
+        401:
+          description: Failed to authorize user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/general_response"
+              examples:
+                unauthorized:
+                  $ref: "#/components/examples/unauthorized"
+                invalid_verify:
+                  $ref: "#/components/examples/invalid_verify"
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      summary: Add an user.
+      description: Add user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  type: string
+                  example: mamet
+                name:
+                  type: string
+                  example: mamet jamet
+                password:
+                  type: string
+                  example: password
+                gender:
+                  type: string
+                  example: male || female
+                role:
+                  type: string
+                  example: admin | user
+        required: true
+      responses:
+        200:
+          description: Create user success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: User created        
+  /user/{id}:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      summary: Update user
+      description: update user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  type: string
+                  example: mabor
+                name:
+                  type: string
+                  example: mamang kesbor
+                role:
+                  type: string
+                  example: admin | user
+                gender:
+                  type: string
+                  example: male | female
+      responses:
+        200:
+          description: Update user success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: User updated
+        401:
+          description: Failed to authorize user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/general_response"
+              examples:
+                unauthorized:
+                  $ref: "#/components/examples/unauthorized"
+                invalid_verify:
+                  $ref: "#/components/examples/invalid_verify"
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      summary: Delete user
+      description: delete user
+      responses:
+        200:
+          description: Delete user success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: User deleted
+        401:
+          description: Failed to authorize user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/general_response"
+              examples:
+                unauthorized:
+                  $ref: "#/components/examples/unauthorized"
+                invalid_verify:
+                  $ref: "#/components/examples/invalid_verify"
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      summary: Get user by id 
+      description: Get user by id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            example: 62c47d470043feb78c655ce1
+          required: true
+      responses:
+        "200":
+          description: Get user by id
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/User"
+                  - $ref: "#/components/schemas/general_response"
+              examples:
+                found:
+                  $ref: "#/components/examples/found"
+                notFound:
+                  $ref: "#/components/examples/notFound"
+        401:
+          description: Failed to authorize user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/general_response"
+              examples:
+                unauthorized:
+                  $ref: "#/components/examples/unauthorized"
+                invalid_verify:
+                  $ref: "#/components/examples/invalid_verify"
+  /user/login:
+    post:
+      tags:
+        - User
+      summary: Login user for creating jwt token.
+      description: login user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  type: string
+                  example: admin
+                password:
+                  type: string
+                  example: password
+        required: true
+      responses:
+        200:
+          description: Login user success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Login success
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+  /user/detail:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      summary: Get user detail by login
+      description: Get user by login
+      responses:
+        "200":
+          description: Get user by login
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/User"
+                  - $ref: "#/components/schemas/general_response"
+              examples:
+                found:
+                  $ref: "#/components/examples/found"
+                notFound:
+                  $ref: "#/components/examples/notFound"
+        401:
+          description: Failed to authorize user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/general_response"
+              examples:
+                unauthorized:
+                  $ref: "#/components/examples/unauthorized"
+                invalid_verify:
+                  $ref: "#/components/examples/invalid_verify"
+    
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: object
+          properties:
+            _id:
+              type: string
+            username:
+              type: string
+            name:
+              type: string
+            password:
+              type: string
+            gender:
+              type: string
+            role:
+              type: string
+    general_response:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+    allUser:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+              username:
+                type: string
+              name:
+                type: string
+              password:
+                type: string
+              gender:
+                type: string
+              role:
+                type: string
+        pagination:
+          type: object
+          properties:
+            currentPage:
+              type: integer
+            totalData:
+              type: integer
+            totalPages:
+              type: integer
+  examples:
+    allUser:
+      summary: All user
+      value:
+        status: 200
+        data: [
+          {
+            _id: 62c47d470043feb78c655ce1,
+            username: admin,
+            name: super admin,
+            password: $2b$10$Bd1CH8VDVaIvnNFZVV9mke7f1HeFV/Re6ESPTULCtUhGsC1t2Q0Re,
+            gender: male,
+            role: admin,
+          }
+        ]
+        pagination: {
+          totalPages: 2,
+          totalData: 10,
+          currentPage: 1,
+        }
+    found:
+      summary: User found
+      value:
+        status: 200
+        data:
+          {
+            _id: 62c47d470043feb78c655ce1,
+            username: admin,
+            name: super admin,
+            password: $2b$10$Bd1CH8VDVaIvnNFZVV9mke7f1HeFV/Re6ESPTULCtUhGsC1t2Q0Re,
+            gender: male,
+            role: admin,
+          }
+    notFound:
+      summary: User not found
+      value:
+        status: 200
+        message: User not found
+    unauthorized:
+      summary: unauthorized user access
+      value:
+        status: 401
+        message: Access token is missing or invalid
+    invalid_verify:
+      summary: Invalid verify token
+      value:
+        status: 401
+        message: Failed to authenticate token

@@ -1,0 +1,31 @@
+version: "3.7"
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    hostname: mongo
+    environment:
+      MONGO_INITDB_DATABASE: collabty
+    ports:
+      - 27017:27017
+    # volumes:
+    #   - mongo:/data/db
+    restart: always
+    networks:
+      - app
+  app:
+    build: .
+    ports:
+      - 4000:4000
+    depends_on:
+      - mongo
+    environment:
+      WAIT_HOSTS: mongo:27017
+    env_file:
+      - .env
+    networks:
+      - app
+networks:
+  app:
+volumes:
+  mongo:
